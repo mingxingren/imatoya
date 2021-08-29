@@ -1,0 +1,51 @@
+cmake_minimum_required(VERSION 3.19)
+project(src)
+
+set(CMAKE_CXX_STANDARD 14)
+
+set(MATOYA_SRC_PATH ${CMAKE_SOURCE_DIR}/../libmatoya/src)
+set(MATOYA_LIB_PATH ${CMAKE_SOURCE_DIR}/../libmatoya/bin/windows/x64)
+message(${CMAKE_SOURCE_DIR}/../libmatoya/bin/windows/x64)
+
+set(WINDOWS_LIBS_LIST)
+list(APPEND WINDOWS_LIBS_LIST bcrypt.lib)
+list(APPEND WINDOWS_LIBS_LIST d3d11.lib)
+list(APPEND WINDOWS_LIBS_LIST d3d9.lib)
+list(APPEND WINDOWS_LIBS_LIST hid.lib)
+list(APPEND WINDOWS_LIBS_LIST uuid.lib)
+list(APPEND WINDOWS_LIBS_LIST dxguid.lib)
+list(APPEND WINDOWS_LIBS_LIST opengl32.lib)
+list(APPEND WINDOWS_LIBS_LIST ws2_32.lib)
+list(APPEND WINDOWS_LIBS_LIST user32.lib)
+list(APPEND WINDOWS_LIBS_LIST gdi32.lib)
+list(APPEND WINDOWS_LIBS_LIST xinput9_1_0.lib)
+list(APPEND WINDOWS_LIBS_LIST ole32.lib)
+list(APPEND WINDOWS_LIBS_LIST shell32.lib)
+list(APPEND WINDOWS_LIBS_LIST windowscodecs.lib)
+list(APPEND WINDOWS_LIBS_LIST shlwapi.lib)
+list(APPEND WINDOWS_LIBS_LIST imm32.lib)
+list(APPEND WINDOWS_LIBS_LIST winmm.lib)
+list(APPEND WINDOWS_LIBS_LIST winhttp.lib)
+list(APPEND WINDOWS_LIBS_LIST secur32.lib)
+list(APPEND WINDOWS_LIBS_LIST crypt32.lib)
+
+set(WINDOWS_LIBS)
+list(JOIN WINDOWS_LIBS_LIST " " WINDOWS_LIBS)
+
+include_directories(${MATOYA_SRC_PATH})
+
+set(IMGUI_PATH ${CMAKE_SOURCE_DIR}/../imgui)
+include_directories(${IMGUI_PATH})
+include_directories(${IMGUI_PATH}/backends)
+
+file(GLOB IMGUI_SRC ${IMGUI_PATH}/*.h ${IMGUI_PATH}/*.cpp)
+if (WIN32)
+    file(GLOB BACK_BACKEND_SRC ${IMGUI_PATH}/backends/imgui_impl_win32.* ${IMGUI_PATH}/backends/imgui_impl_dx11.*)
+endif()
+
+add_executable(src main.cpp ${IMGUI_SRC} ${BACK_BACKEND_SRC} imgui_wraper.cpp imgui_wraper.h Application.cpp Application.h)
+
+target_link_libraries(src ${WINDOWS_LIBS})
+target_link_directories(src PRIVATE ${MATOYA_LIB_PATH})
+target_link_libraries(src matoya.lib)
+target_link_libraries(src d3dcompiler.lib dxgi.lib)
